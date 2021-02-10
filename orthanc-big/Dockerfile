@@ -1,4 +1,5 @@
 FROM debian:buster-slim as builder
+ARG orthanc_branch='default'
 
 MAINTAINER Sebastien Jodogne <s.jodogne@gmail.com>
 LABEL Description="Orthanc, free DICOM server" Vendor="The Orthanc project"
@@ -13,7 +14,7 @@ RUN apt-get -y update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install locales
 
 ADD ./build-orthanc.sh /root/build-orthanc.sh
-RUN bash /root/build-orthanc.sh "default"
+RUN bash /root/build-orthanc.sh "$orthanc_branch"
 
 # RUN DEBIAN_FRONTEND=noninteractive apt-get -y purge wget nano build-essential unzip \
 #     cmake mercurial uuid-dev libcurl4-openssl-dev liblua5.1-0-dev libgtest-dev libpng-dev \
