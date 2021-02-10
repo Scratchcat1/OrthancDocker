@@ -32,7 +32,7 @@ mkdir -p /usr/share/orthanc/plugins
 
 # Clone the Orthanc repository and switch to the requested branch
 cd /root/
-hg clone https://bitbucket.org/sjodogne/orthanc/ orthanc
+hg clone https://hg.orthanc-server.com/orthanc/ orthanc
 cd orthanc
 echo "Switching Orthanc to branch: $1"
 hg up -c "$1"
@@ -40,20 +40,32 @@ hg up -c "$1"
 # Build the Orthanc core
 mkdir Build
 cd Build
+# Need ICU variables to pass asian unit tests (See https://hg.orthanc-server.com/orthanc/file/tip/INSTALL#l95)
 cmake \
     -DALLOW_DOWNLOADS=ON \
     -DCMAKE_BUILD_TYPE:STRING=Release \
     -DSTANDALONE_BUILD=ON \
+    -DSTATIC_BUILD=ON \
     -DUSE_DCMTK_362=ON \
     -DUSE_GOOGLE_TEST_DEBIAN_PACKAGE=ON \
+    -DUSE_SYSTEM_CIVETWEB=OFF \
     -DUSE_SYSTEM_DCMTK=OFF \
     -DUSE_SYSTEM_MONGOOSE=OFF \
-    ..
+    -DUSE_SYSTEM_LIBBOOST=OFF \
+    -DUSE_SYSTEM_JSONCPP=OFF \
+    -DBOOST_LOCALE_BACKEND=icu \
+    ../OrthancServer
 make -j$COUNT_CORES
 
 # To run the unit tests, we need to install the "en_US" locale
-locale-gen en_US
-locale-gen en_US.UTF-8
+# For Ubuntu:
+# locale-gen en_US
+# locale-gen en_US.UTF-8
+# For Debian (see https://unix.stackexchange.com/questions/246846/cant-generate-en-us-utf-8-locale):
+sed -i 's/^# *\(en_US\)/\1/' /etc/locale.gen
+sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
+sed -i 's/^# *\(ja_JP.UTF-8\)/\1/' /etc/locale.gen
+sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen && locale-gen
 update-locale 
 ./UnitTests
 
@@ -61,8 +73,8 @@ update-locale
 make install
 
 # Remove the build directory to recover space
-cd /root/
-rm -rf /root/orthanc
+# cd /root/
+# rm -rf /root/orthanc
 
 # Auto-generate, then patch the configuration file
 CONFIG=/etc/orthanc/orthanc.json

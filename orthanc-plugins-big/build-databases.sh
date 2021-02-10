@@ -27,22 +27,31 @@ echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
 
 # Clone the repository and switch to the requested branch
 cd /root/
-hg clone https://bitbucket.org/sjodogne/orthanc-postgresql/
-cd orthanc-postgresql
+hg clone https://hg.orthanc-server.com/orthanc-databases/
+cd orthanc-databases
 hg up -c "$1"
 
-# Build the plugin
-mkdir Build
-cd Build
+# Build the postgreSQL plugin
+mkdir PostgreBuild
+cd PostgreBuild
 cmake -DALLOW_DOWNLOADS:BOOL=ON \
-    -DCMAKE_BUILD_TYPE:STRING=Release \
-    -DUSE_GOOGLE_TEST_DEBIAN_PACKAGE:BOOL=ON \
-    -DUSE_SYSTEM_JSONCPP:BOOL=OFF \
-    ..
+    -DSTATIC_BUILD=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    ../PostgreSQL
 make -j$COUNT_CORES
+# ./UnitTests # Need postgres server
 cp -L libOrthancPostgreSQLIndex.so /usr/share/orthanc/plugins/
 cp -L libOrthancPostgreSQLStorage.so /usr/share/orthanc/plugins/
 
-# Remove the build directory to recover space
-cd /root/
-rm -rf /root/orthanc-postgresql
+# Build the MariaSQL plugin
+cd ../
+mkdir MariaSQLBuild
+cd MariaSQLBuild
+cmake -DALLOW_DOWNLOADS:BOOL=ON \
+    -DSTATIC_BUILD=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    ../MySQL
+make -j$COUNT_CORES
+# ./UnitTests
+cp -L libOrthancMySQLIndex.so /usr/share/orthanc/plugins/
+cp -L libOrthancMySQLStorage.so /usr/share/orthanc/plugins/

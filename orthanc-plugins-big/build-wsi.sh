@@ -27,7 +27,7 @@ echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
 
 # Clone the repository and switch to the requested branch
 cd /root/
-hg clone https://bitbucket.org/sjodogne/orthanc-wsi/
+hg clone https://hg.orthanc-server.com/orthanc-wsi/
 cd orthanc-wsi
 hg up -c "$1"
 
@@ -36,6 +36,7 @@ cd /root/orthanc-wsi/ViewerPlugin
 mkdir Build
 cd Build
 cmake -DALLOW_DOWNLOADS:BOOL=ON \
+    -DSTATIC_BUILD=ON \
     -DCMAKE_BUILD_TYPE:STRING=Release \
     -DUSE_SYSTEM_JSONCPP:BOOL=OFF \
     ..
@@ -47,12 +48,10 @@ cd /root/orthanc-wsi/Applications
 mkdir Build
 cd Build
 cmake -DALLOW_DOWNLOADS:BOOL=ON \
+    -DSTATIC_BUILD=ON \
     -DCMAKE_BUILD_TYPE:STRING=Release \
     -DUSE_SYSTEM_JSONCPP:BOOL=OFF \
     ..
 make -j$COUNT_CORES
-make install
+# make install
 
-# Remove the build directory to recover space
-cd /root/
-rm -rf /root/orthanc-wsi

@@ -23,12 +23,12 @@ set -e
 
 # Get the number of available cores to speed up the builds
 COUNT_CORES=`grep -c ^processor /proc/cpuinfo`
-echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
+echo "Will use $COUNT_CORES parallel jobs to build Orthanc GDCM"
 
 # Clone the repository and switch to the requested branch
 cd /root/
-hg clone https://hg.orthanc-server.com/orthanc-dicomweb/
-cd orthanc-dicomweb
+hg clone https://hg.orthanc-server.com/orthanc-gdcm/
+cd orthanc-gdcm
 hg up -c "$1"
 
 # Build the plugin
@@ -42,6 +42,5 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     -DUSE_SYSTEM_PUGIXML:BOOL=OFF \
     ..
 make -j$COUNT_CORES
-./UnitTests
-cp -L libOrthancDicomWeb.so /usr/share/orthanc/plugins/
+cp -L libOrthancGdcm.so /usr/share/orthanc/plugins/
 

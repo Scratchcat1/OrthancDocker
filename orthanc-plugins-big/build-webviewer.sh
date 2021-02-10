@@ -27,7 +27,7 @@ echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
 
 # Clone the repository and switch to the requested branch
 cd /root/
-hg clone https://bitbucket.org/sjodogne/orthanc-webviewer/
+hg clone https://hg.orthanc-server.com/orthanc-webviewer/
 cd orthanc-webviewer
 hg up -c "$1"
 
@@ -35,14 +35,11 @@ hg up -c "$1"
 mkdir Build
 cd Build
 cmake -DALLOW_DOWNLOADS:BOOL=ON \
+    -DSTATIC_BUILD=ON \
     -DCMAKE_BUILD_TYPE:STRING=Release \
     -DUSE_GOOGLE_TEST_DEBIAN_PACKAGE:BOOL=ON \
     -DUSE_SYSTEM_JSONCPP:BOOL=OFF \
     ..
 make -j$COUNT_CORES
 ./UnitTests
-cp -L libOrthancWebViewer.so /usr/share/orthanc/plugins/
-
-# Remove the build directory to recover space
-cd /root/
-rm -rf /root/orthanc-webviewer
+# cp -L libOrthancWebViewer.so /usr/share/orthanc/plugins/
