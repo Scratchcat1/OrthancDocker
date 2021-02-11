@@ -72,6 +72,12 @@ update-locale
 # Install the Orthanc core
 make install
 
+# Copy the artifacts to the artifacts directory, -L to ensure the file and not a link is copied
+cp -L Orthanc /root/artifacts
+cp -L libConnectivityChecks.so /root/artifacts/
+cp -L libModalityWorklists.so /root/artifacts/
+cp -L libServeFolders.so /root/artifacts/
+
 # Remove the build directory to recover space
 # cd /root/
 # rm -rf /root/orthanc

@@ -41,7 +41,7 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     -DUSE_SYSTEM_JSONCPP:BOOL=OFF \
     ..
 make -j$COUNT_CORES
-cp -L libOrthancWSI.so /usr/share/orthanc/plugins/
+cp -L libOrthancWSI.so /root/artifacts/
 
 # Build the DICOM-ization applications
 cd /root/orthanc-wsi/Applications
@@ -54,4 +54,9 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     ..
 make -j$COUNT_CORES
 # make install
+cp -L OrthancWSIDicomizer /root/artifacts/
+cp -L OrthancWSIDicomToTiff /root/artifacts/
 
+# Remove the build directory to recover space
+cd /root/
+rm -rf /root/orthanc-wsi
