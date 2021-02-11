@@ -40,8 +40,8 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     ../PostgreSQL
 make -j$COUNT_CORES
 # ./UnitTests # Need postgres server
-cp -L libOrthancPostgreSQLIndex.so /usr/share/orthanc/plugins/
-cp -L libOrthancPostgreSQLStorage.so /usr/share/orthanc/plugins/
+cp -L libOrthancPostgreSQLIndex.so /root/artifacts/
+cp -L libOrthancPostgreSQLStorage.so /root/artifacts/
 
 # Build the MariaSQL plugin
 cd ../
@@ -53,5 +53,9 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     ../MySQL
 make -j$COUNT_CORES
 # ./UnitTests
-cp -L libOrthancMySQLIndex.so /usr/share/orthanc/plugins/
-cp -L libOrthancMySQLStorage.so /usr/share/orthanc/plugins/
+cp -L libOrthancMySQLIndex.so /root/artifacts/
+cp -L libOrthancMySQLStorage.so /root/artifacts/
+
+# Remove the build directory to recover space
+cd /root/
+rm -rf /root/orthanc-databases

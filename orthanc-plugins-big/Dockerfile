@@ -20,6 +20,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano build-essential 
     libcharls-dev libjsoncpp-dev libpugixml-dev libgdcm2-dev postgresql-server-dev-all libtiff-dev libopenslide-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /root/artifacts/
+
 ADD ./build-orthanc.sh /root/build-orthanc.sh
 RUN bash /root/build-orthanc.sh "$orthanc_branch"
 
@@ -50,21 +52,22 @@ RUN mkdir -p /var/lib/orthanc/db && \
     mkdir -p /usr/local/share/orthanc/plugins/
 
 COPY --from=builder /etc/orthanc /etc/orthanc
-COPY --from=builder /root/orthanc/Build/Orthanc /usr/local/sbin/
-COPY --from=builder /root/orthanc-wsi/Applications/Build/OrthancWSIDicomizer /usr/local/bin/
-COPY --from=builder /root/orthanc-wsi/Applications/Build/OrthancWSIDicomToTiff /usr/local/bin/
-COPY --from=builder /root/orthanc/Build/libConnectivityChecks.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc/Build/libModalityWorklists.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc/Build/libServeFolders.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/Orthanc /usr/local/sbin/
+COPY --from=builder /root/artifacts/OrthancWSIDicomizer /usr/local/bin/
+COPY --from=builder /root/artifacts/OrthancWSIDicomToTiff /usr/local/bin/
 
-COPY --from=builder /root/orthanc-dicomweb/Build/libOrthancDicomWeb.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-databases/PostgreBuild/libOrthancPostgreSQLIndex.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-databases/PostgreBuild/libOrthancPostgreSQLStorage.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-databases/MariaSQLBuild/libOrthancMySQLIndex.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-databases/MariaSQLBuild/libOrthancMySQLStorage.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-webviewer/Build/libOrthancWebViewer.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-wsi/ViewerPlugin/Build/libOrthancWSI.so /usr/local/share/orthanc/plugins/
-COPY --from=builder /root/orthanc-gdcm/Build/libOrthancGdcm.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libConnectivityChecks.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libModalityWorklists.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libServeFolders.so /usr/local/share/orthanc/plugins/
+
+COPY --from=builder /root/artifacts/libOrthancDicomWeb.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancPostgreSQLIndex.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancPostgreSQLStorage.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancMySQLIndex.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancMySQLStorage.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancWebViewer.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancWSI.so /usr/local/share/orthanc/plugins/
+COPY --from=builder /root/artifacts/libOrthancGdcm.so /usr/local/share/orthanc/plugins/
 
 
 VOLUME [ "/var/lib/orthanc/db" ]
