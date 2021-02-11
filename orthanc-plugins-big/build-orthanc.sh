@@ -79,8 +79,8 @@ cp -L libModalityWorklists.so /root/artifacts/
 cp -L libServeFolders.so /root/artifacts/
 
 # Remove the build directory to recover space
-# cd /root/
-# rm -rf /root/orthanc
+cd /root/
+rm -rf /root/orthanc
 
 # Auto-generate, then patch the configuration file
 CONFIG=/etc/orthanc/orthanc.json
