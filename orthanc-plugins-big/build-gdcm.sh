@@ -42,5 +42,8 @@ cmake -DALLOW_DOWNLOADS:BOOL=ON \
     -DUSE_SYSTEM_PUGIXML:BOOL=OFF \
     ..
 make -j$COUNT_CORES
-cp -L libOrthancGdcm.so /usr/share/orthanc/plugins/
+cp -L libOrthancGdcm.so /root/artifacts/
 
+# Remove the build directory to recover space
+cd /root/
+rm -rf /root/orthanc-gdcm
