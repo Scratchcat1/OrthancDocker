@@ -41,8 +41,9 @@ RUN bash /root/build-gdcm.sh "$gdcm_branch"
 
 FROM debian:buster-slim
 
-# RUN apt-get -y clean && apt-get -y update
-# RUN DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends libjsoncpp1 && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y clean && apt-get -y update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install locales && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && rm -rf /usr/share/i18n/
 
 RUN mkdir -p /var/lib/orthanc/db && \
     mkdir -p /usr/local/sbin/ && \

@@ -63,9 +63,7 @@ make -j$COUNT_CORES
 # locale-gen en_US.UTF-8
 # For Debian (see https://unix.stackexchange.com/questions/246846/cant-generate-en-us-utf-8-locale):
 sed -i 's/^# *\(en_US\)/\1/' /etc/locale.gen
-sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
-sed -i 's/^# *\(ja_JP.UTF-8\)/\1/' /etc/locale.gen
-sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen && locale-gen
+sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
 update-locale 
 ./UnitTests
 
