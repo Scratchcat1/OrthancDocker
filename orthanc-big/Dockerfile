@@ -1,4 +1,4 @@
-FROM scratchcat1:buster-slim as builder
+FROM scratchcat1/orthanc-base:buster as builder
 
 MAINTAINER Sebastien Jodogne <s.jodogne@gmail.com>
 LABEL Description="Orthanc, free DICOM server" Vendor="The Orthanc project"
