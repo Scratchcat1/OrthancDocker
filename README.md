@@ -30,7 +30,7 @@ To build from a particular branch add the relevant build args:
 docker buildx build --platform linux/amd64 --build-arg orthanc_branch=Orthanc-1.9.0 --build-arg databases_branch=OrthancPostgreSQL-3.3
 --tag scratchcat1/orthanc-plugins:1.9.0 ./
 ```
-
+Changing arguments will disable the image caching for later components, therefore ARGS are defined as late as possible.
 Available arguments:
 - orthanc_branch
 - databases_branch

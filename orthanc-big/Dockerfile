@@ -1,5 +1,4 @@
-FROM debian:buster-slim as builder
-ARG orthanc_branch='default'
+FROM scratchcat1:buster-slim as builder
 
 MAINTAINER Sebastien Jodogne <s.jodogne@gmail.com>
 LABEL Description="Orthanc, free DICOM server" Vendor="The Orthanc project"
@@ -13,6 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano build-essential 
 
 RUN mkdir -p /root/artifacts
 
+ARG orthanc_branch='default'
 ADD ./build-orthanc.sh /root/build-orthanc.sh
 RUN bash /root/build-orthanc.sh "$orthanc_branch"
 
