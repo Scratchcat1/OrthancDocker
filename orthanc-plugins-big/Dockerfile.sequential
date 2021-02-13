@@ -2,31 +2,42 @@ FROM scratchcat1/orthanc-base:buster as orthanc_builder
 ARG orthanc_branch='default'
 ADD ./build-orthanc.sh /root/build-orthanc.sh
 RUN bash /root/build-orthanc.sh "$orthanc_branch"
+RUN touch /root/build_complete
 
 FROM scratchcat1/orthanc-base:buster as databases_builder
 ARG databases_branch='default'
+COPY --from=orthanc_builder /root/build_complete /root/tmp
 ADD ./build-databases.sh /root/build-databases.sh
 RUN bash /root/build-databases.sh "$databases_branch"
+RUN touch /root/build_complete
 
 FROM scratchcat1/orthanc-base:buster as webviewer_builder
 ARG webviewer_branch='default'
+COPY --from=databases_builder /root/build_complete /root/tmp
 ADD ./build-webviewer.sh /root/build-webviewer.sh
 RUN bash /root/build-webviewer.sh "$webviewer_branch"
+RUN touch /root/build_complete
 
 FROM scratchcat1/orthanc-base:buster as dicomweb_builder
 ARG dicomweb_branch='default'
+# COPY --from=orthanc_builder /root/build_complete /root/tmp
 ADD ./build-dicomweb.sh /root/build-dicomweb.sh
 RUN bash /root/build-dicomweb.sh "$dicomweb_branch"
+RUN touch /root/build_complete
 
 FROM scratchcat1/orthanc-base:buster as wsi_builder
 ARG wsi_branch='default'
+COPY --from=dicomweb_builder /root/build_complete /root/tmp
 ADD ./build-wsi.sh /root/build-wsi.sh
 RUN bash /root/build-wsi.sh "$wsi_branch"
+RUN touch /root/build_complete
 
 FROM scratchcat1/orthanc-base:buster as gdcm_builder
 ARG gdcm_branch='default'
+COPY --from=wsi_builder /root/build_complete /root/tmp
 ADD ./build-gdcm.sh /root/build-gdcm.sh
 RUN bash /root/build-gdcm.sh "$gdcm_branch"
+RUN touch /root/build_complete
 
 
 FROM debian:buster-slim
