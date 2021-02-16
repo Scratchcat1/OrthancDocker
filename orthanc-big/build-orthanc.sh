@@ -25,6 +25,9 @@ set -e
 COUNT_CORES=`grep -c ^processor /proc/cpuinfo`
 echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
 
+# Check if a version number is greater than another https://stackoverflow.com/questions/16989598/comparing-php-version-numbers-using-bash/24067243#24067243
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+
 # Create the various directories as in the official Debian package
 mkdir /etc/orthanc
 mkdir -p /var/lib/orthanc/db
@@ -36,6 +39,16 @@ hg clone https://hg.orthanc-server.com/orthanc/ orthanc
 cd orthanc
 echo "Switching Orthanc to branch: $1"
 hg up -c "$1"
+
+# Determine cmake location as it was moved in 1.7.2
+orthanc_cmake_location="../"
+if version_gt $1 "Orthanc-1.7.1" || [ "$1" = "default" ]; then
+    orthanc_cmake_location="../OrthancServer"
+else
+    # Patch the orthanc REST API unit test to use the new source code location rather than the defunct bitbucket repo.
+    sed -i 's/sjodogne\/orthanc\/raw\/Orthanc-0.9.3\/Resources\/Configuration.json/osimis\/orthanc-setup-samples\/raw\/master\/docker\/serve-folders\/orthanc\/serve-folders.json/g' ./UnitTestsSources/RestApiTests.cpp
+    sed -i 's/ASSERT_TRUE(v.isMember("LuaScripts"));/ASSERT_TRUE(v.isMember("ServeFolders"));/g' ./UnitTestsSources/RestApiTests.cpp
+fi
 
 # Build the Orthanc core
 mkdir Build
@@ -52,9 +65,10 @@ cmake \
     -DUSE_SYSTEM_DCMTK=OFF \
     -DUSE_SYSTEM_MONGOOSE=OFF \
     -DUSE_SYSTEM_LIBBOOST=OFF \
+    -DUSE_SYSTEM_OPENSSL=ON \
     -DUSE_SYSTEM_JSONCPP=OFF \
     -DBOOST_LOCALE_BACKEND=icu \
-    ../OrthancServer
+    "$orthanc_cmake_location"
 make -j$COUNT_CORES
 
 # To run the unit tests, we need to install the "en_US" locale
@@ -72,9 +86,15 @@ make install
 
 # Copy the artifacts to the artifacts directory, -L to ensure the file and not a link is copied
 cp -L Orthanc /root/artifacts
-cp -L libConnectivityChecks.so /root/artifacts
-cp -L libModalityWorklists.so /root/artifacts
-cp -L libServeFolders.so /root/artifacts
+
+# Copy these files only if they exist, appeared in 1.6.0
+base_plugin_dir="/root/artifacts/base-plugins"
+mkdir $base_plugin_dir
+if version_gt $1 "Orthanc-1.5.8"; then
+    cp -L libConnectivityChecks.so $base_plugin_dir
+    cp -L libModalityWorklists.so $base_plugin_dir
+    cp -L libServeFolders.so $base_plugin_dir
+fi
 
 # Remove the build directory to recover space
 cd /root/
