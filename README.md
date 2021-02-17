@@ -12,6 +12,7 @@ Full documentation is available in the
 `orthanc-big` and `orthanc-plugins-big` can be built for multiple architectures.
 
 ### Emulation
+Set up a cross platform build environment with this [guide](https://web.archive.org/web/20201230140648/https://jite.eu/2019/10/3/multi-arch-docker/)
 All architectures can be built on a single machine using `docker buildx`.
 `docker buildx build --platform linux/amd64,linux/arm/v7 --push --tag scratchcat1/orthanc:latest ./`
 

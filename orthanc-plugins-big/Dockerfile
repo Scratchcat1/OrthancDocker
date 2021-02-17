@@ -3,10 +3,16 @@ ARG orthanc_branch='default'
 ADD ./build-orthanc.sh /root/build-orthanc.sh
 RUN bash /root/build-orthanc.sh "$orthanc_branch"
 
-FROM scratchcat1/orthanc-base:buster as databases_builder
-ARG databases_branch='default'
-ADD ./build-databases.sh /root/build-databases.sh
-RUN bash /root/build-databases.sh "$databases_branch"
+FROM scratchcat1/orthanc-base:buster as postgresql_builder
+ARG postgresql_branch='default'
+ADD ./build-postgresql.sh /root/build-postgresql.sh
+RUN bash /root/build-postgresql.sh "$postgresql_branch"
+
+FROM scratchcat1/orthanc-base:buster as mysql_builder
+ARG mysql_branch='default'
+ARG orthanc_branch='default'
+ADD ./build-mysql.sh /root/build-mysql.sh
+RUN bash /root/build-mysql.sh "$mysql_branch" "$orthanc_branch"
 
 FROM scratchcat1/orthanc-base:buster as webviewer_builder
 ARG webviewer_branch='default'
@@ -45,15 +51,13 @@ COPY --from=orthanc_builder /root/artifacts/Orthanc /usr/local/sbin/
 COPY --from=wsi_builder /root/artifacts/OrthancWSIDicomizer /usr/local/bin/
 COPY --from=wsi_builder /root/artifacts/OrthancWSIDicomToTiff /usr/local/bin/
 
-COPY --from=orthanc_builder /root/artifacts/libConnectivityChecks.so /usr/local/share/orthanc/plugins/
-COPY --from=orthanc_builder /root/artifacts/libModalityWorklists.so /usr/local/share/orthanc/plugins/
-COPY --from=orthanc_builder /root/artifacts/libServeFolders.so /usr/local/share/orthanc/plugins/
+COPY --from=orthanc_builder /root/artifacts/base-plugins/* /usr/local/share/orthanc/plugins/
 
 COPY --from=dicomweb_builder /root/artifacts/libOrthancDicomWeb.so /usr/local/share/orthanc/plugins/
-COPY --from=databases_builder /root/artifacts/libOrthancPostgreSQLIndex.so /usr/local/share/orthanc/plugins/
-COPY --from=databases_builder /root/artifacts/libOrthancPostgreSQLStorage.so /usr/local/share/orthanc/plugins/
-COPY --from=databases_builder /root/artifacts/libOrthancMySQLIndex.so /usr/local/share/orthanc/plugins/
-COPY --from=databases_builder /root/artifacts/libOrthancMySQLStorage.so /usr/local/share/orthanc/plugins/
+COPY --from=postgresql_builder /root/artifacts/libOrthancPostgreSQLIndex.so /usr/local/share/orthanc/plugins/
+COPY --from=postgresql_builder /root/artifacts/libOrthancPostgreSQLStorage.so /usr/local/share/orthanc/plugins/
+COPY --from=mysql_builder /root/artifacts/libOrthancMySQLIndex.so /usr/local/share/orthanc/plugins/
+COPY --from=mysql_builder /root/artifacts/libOrthancMySQLStorage.so /usr/local/share/orthanc/plugins/
 COPY --from=webviewer_builder /root/artifacts/libOrthancWebViewer.so /usr/local/share/orthanc/plugins/
 COPY --from=wsi_builder /root/artifacts/libOrthancWSI.so /usr/local/share/orthanc/plugins/
 COPY --from=gdcm_builder /root/artifacts/libOrthancGdcm.so /usr/local/share/orthanc/plugins/
