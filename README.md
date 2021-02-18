@@ -48,7 +48,8 @@ Available arguments:
 |Variable|List of branches|
 |------------------|---|
 |`orthanc_branch`| [List of branches](https://hg.orthanc-server.com/orthanc/branches)|
-|`databases_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-databases/branches)|
+|`postgresql_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-databases/branches)|
+|`mysql_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-databases/branches)|
 |`dicomweb_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-dicomweb/branches)|
 |`gdcm_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-gdcm/branches)|
 |`webviewer_branch`| [List of branches](https://hg.orthanc-server.com/orthanc-webviewer/branches)|
