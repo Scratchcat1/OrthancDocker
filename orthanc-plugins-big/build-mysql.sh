@@ -21,9 +21,11 @@
 
 set -e
 
+ORTHANC_BRANCH=$2
+
 # Get the number of available cores to speed up the builds
 COUNT_CORES=`grep -c ^processor /proc/cpuinfo`
-echo "Will use $COUNT_CORES parallel jobs to build Orthanc"
+echo "Will use $COUNT_CORES parallel jobs to build Orthanc MySQL plugin"
 
 # Clone the repository and switch to the requested branch
 cd /root/
@@ -31,20 +33,16 @@ hg clone https://hg.orthanc-server.com/orthanc-databases/
 cd orthanc-databases
 hg up -c "$1"
 
-# Build the postgreSQL plugin
-mkdir PostgreBuild
-cd PostgreBuild
-cmake -DALLOW_DOWNLOADS:BOOL=ON \
-    -DSTATIC_BUILD=ON \
-    -DCMAKE_BUILD_TYPE=Release \
-    ../PostgreSQL
-make -j$COUNT_CORES
-# ./UnitTests # Need postgres server
-cp -L libOrthancPostgreSQLIndex.so /root/artifacts/
-cp -L libOrthancPostgreSQLStorage.so /root/artifacts/
+OLD_DOWNLOAD_ORTHANC_FILE="Resources/Orthanc/DownloadOrthancFramework.cmake"
+if [ -f "$OLD_DOWNLOAD_ORTHANC_FILE" ]; then
+    # Patch resource file to use new orthanc repo
+    sed -i 's/bitbucket.org\/sjodogne/hg.orthanc-server.com/g' "$OLD_DOWNLOAD_ORTHANC_FILE"
+
+    # Patch resource file to use relevant version of orthanc
+    sed -i 's/ORTHANC_FRAMEWORK_BRANCH "default"/ORTHANC_FRAMEWORK_BRANCH "'$ORTHANC_BRANCH'"/g' "$OLD_DOWNLOAD_ORTHANC_FILE"
+fi
 
 # Build the MariaSQL plugin
-cd ../
 mkdir MariaSQLBuild
 cd MariaSQLBuild
 cmake -DALLOW_DOWNLOADS:BOOL=ON \
