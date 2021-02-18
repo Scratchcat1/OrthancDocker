@@ -8,6 +8,16 @@ medical imaging.
 Full documentation is available in the
 [Orthanc Book](http://book.orthanc-server.com/users/docker.html).
 
+## Overview
+Fork of the OrthancDocker project by Sébastien Jodogne.
+Manifests allow the correct architecture image to be selected automatically.
+
+## Features:
+- Updated base image to Debian Buster
+- Cross architecture support with the ability to build all architectures on a single platform.
+- Support for older Orthanc versions by patching build to use the new Orthanc repository.
+- Smaller images by separating build and final images with multi-stage builds vs [Orthanc XArch](https://github.com/derekmerck/docker-orthanc-xarch).
+
 ## Building for multiarch
 `orthanc-big` and `orthanc-plugins-big` can be built for multiple architectures.
 
