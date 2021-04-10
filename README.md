@@ -57,3 +57,10 @@ Available arguments:
 
 The content of this Docker repository is licensed under the AGPLv3+
 license.
+
+## Common problems
+### Incorrectly set DNS
+Example error output:  
+`E0410 18:31:51.926529 OrthancException.cpp:57] Error in the network protocol: DicomAssociation - connecting to AET "<SOME_AET>": Failed to establish association (0006:0317 Peer aborted Association (or never connected); 0006:0320 Attempt to connect to unknown host: <hostname>)`  
+A modality may make a query from an IP address in the list of modalities, but try retrieve to a hostname. The docker container may not use the hosts DNS servers by default, causing the hostname query to fail.  
+Fix: Set the correct DNS using `docker run --dns=<SOME_DNS> <IMAGE_NAME>` or set the DNS in your compose file.
